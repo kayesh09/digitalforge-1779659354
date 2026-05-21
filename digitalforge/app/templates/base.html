@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="DigitalForge - Premium digital marketplace for creators">
+    <title>{% block title %}DigitalForge{% endblock %}</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Custom Tailwind Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e3a8a'
+                        },
+                        accent: {
+                            500: '#8b5cf6',
+                            600: '#7c3aed'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Ethers.js v6 for Web3 -->
+    <script src="https://cdn.jsdelivr.net/npm/ethers@6.9.0/dist/ethers.umd.min.js"></script>
+
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-gray-900 text-white font-sans antialiased">
+    <!-- Navigation -->
+    <nav class="bg-gray-900/80 backdrop-blur-md border-b border-white/10 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <!-- Logo -->
+                <a href="{{ url_for('main.index') }}" class="flex items-center gap-2">
+                    <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+                        <i data-lucide="hammer" class="w-5 h-5 text-white"></i>
+                    </div>
+                    <span class="text-xl font-bold text-white">DigitalForge</span>
+                </a>
+
+                <!-- Search -->
+                <div class="hidden md:flex flex-1 max-w-md mx-8">
+                    <form action="{{ url_for('main.product_list') }}" method="get" class="w-full relative">
+                        <input type="text" name="q" placeholder="Search products..."
+                               class="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-full text-white placeholder-gray-500 focus:bg-white/10 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all text-sm"
+                               value="{{ request.args.get('q', '') }}">
+                        <i data-lucide="search" class="absolute left-3 top-2.5 w-4 h-4 text-gray-500"></i>
+                    </form>
+                </div>
+
+                <!-- Right Nav -->
+                <div class="flex items-center gap-4">
+                    {% if current_user.is_authenticated %}
+                        {% if current_user.is_seller %}
+                            <a href="{{ url_for('dashboard.seller') }}" class="hidden md:block text-gray-400 hover:text-white transition text-sm">Seller</a>
+                        {% endif %}
+
+                        <div class="relative group">
+                            <button class="flex items-center gap-2 text-gray-300 hover:text-white transition">
+                                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-semibold text-sm">
+                                    {{ current_user.username[0].upper() }}
+                                </div>
+                            </button>
+
+                            <div class="absolute right-0 mt-2 w-48 bg-gray-800 rounded-xl shadow-2xl border border-white/10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                                <a href="{{ url_for('dashboard.buyer') }}" class="block px-4 py-2 text-gray-300 hover:text-white hover:bg-white/5 first:rounded-t-xl text-sm">My Purchases</a>
+                                <a href="{{ url_for('auth.profile') }}" class="block px-4 py-2 text-gray-300 hover:text-white hover:bg-white/5 text-sm">Settings</a>
+                                {% if current_user.is_admin %}
+                                    <a href="{{ url_for('dashboard.admin') }}" class="block px-4 py-2 text-gray-300 hover:text-white hover:bg-white/5 text-sm">Admin Panel</a>
+                                {% endif %}
+                                <div class="border-t border-white/10"></div>
+                                <a href="{{ url_for('auth.logout') }}" class="block px-4 py-2 text-red-400 hover:text-red-300 hover:bg-white/5 rounded-b-xl text-sm">Log Out</a>
+                            </div>
+                        </div>
+                    {% else %}
+                        <a href="{{ url_for('auth.login') }}" class="text-gray-400 hover:text-white transition text-sm">Log In</a>
+                        <a href="{{ url_for('auth.register') }}" class="bg-white text-gray-900 px-4 py-2 rounded-full text-sm font-bold hover:bg-gray-100 transition">
+                            Get Started
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+                {% for category, message in messages %}
+                    <div class="rounded-xl p-4 mb-2 flex items-center justify-between {% if category == 'success' %}bg-green-500/10 text-green-400 border border-green-500/20{% elif category == 'danger' %}bg-red-500/10 text-red-400 border border-red-500/20{% elif category == 'warning' %}bg-yellow-500/10 text-yellow-400 border border-yellow-500/20{% else %}bg-blue-500/10 text-blue-400 border border-blue-500/20{% endif %}">
+                        <div class="flex items-center gap-2">
+                            {% if category == 'success' %}
+                                <i data-lucide="check-circle" class="w-5 h-5"></i>
+                            {% elif category == 'danger' %}
+                                <i data-lucide="alert-circle" class="w-5 h-5"></i>
+                            {% else %}
+                                <i data-lucide="info" class="w-5 h-5"></i>
+                            {% endif %}
+                            <span>{{ message }}</span>
+                        </div>
+                        <button onclick="this.parentElement.remove()" class="hover:opacity-70">
+                            <i data-lucide="x" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-950 border-t border-white/5 pt-16 pb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+                <div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+                            <i data-lucide="hammer" class="w-5 h-5 text-white"></i>
+                        </div>
+                        <span class="text-xl font-bold text-white">DigitalForge</span>
+                    </div>
+                    <p class="text-sm text-gray-500 leading-relaxed">
+                        The premier Web3 marketplace for digital creators. Buy, sell, and discover premium digital assets.
+                    </p>
+                </div>
+
+                <div>
+                    <h3 class="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Marketplace</h3>
+                    <ul class="space-y-3 text-sm">
+                        <li><a href="{{ url_for('main.product_list') }}" class="text-gray-500 hover:text-white transition">All Products</a></li>
+                        <li><a href="{{ url_for('main.product_list') }}" class="text-gray-500 hover:text-white transition">Featured</a></li>
+                        <li><a href="{{ url_for('main.product_list') }}" class="text-gray-500 hover:text-white transition">New Arrivals</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-white font-semibold mb-4 text-sm uppercase tracking-wider">For Creators</h3>
+                    <ul class="space-y-3 text-sm">
+                        <li><a href="{{ url_for('auth.register') }}" class="text-gray-500 hover:text-white transition">Start Selling</a></li>
+                        <li><a href="#" class="text-gray-500 hover:text-white transition">Pricing</a></li>
+                        <li><a href="#" class="text-gray-500 hover:text-white transition">Guidelines</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Connect</h3>
+                    <div class="flex gap-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition">
+                            <i data-lucide="twitter" class="w-5 h-5"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition">
+                            <i data-lucide="github" class="w-5 h-5"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition">
+                            <i data-lucide="message-circle" class="w-5 h-5"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p class="text-sm text-gray-600"> DigitalForge Marketplace. Built with Flask & Web3.</p>
+                <div class="flex gap-6 text-sm text-gray-600">
+                    <a href="#" class="hover:text-gray-400 transition">Privacy</a>
+                    <a href="#" class="hover:text-gray-400 transition">Terms</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Initialize Lucide Icons -->
+    <script>lucide.createIcons();</script>
+
+    <!-- Wallet Connection Script -->
+    <script src="{{ url_for('static', filename='js/wallet.js') }}"></script>
+
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

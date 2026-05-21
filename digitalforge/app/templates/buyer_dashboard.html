@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}My Purchases - DigitalForge{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">My Purchases</h1>
+        <p class="text-gray-500">Access all your downloaded products</p>
+    </div>
+    
+    {% if purchases %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for purchase in purchases %}
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition">
+            <div class="aspect-[4/3] bg-gray-100 relative">
+                {% if purchase.product.preview_images %}
+                    <img src="{{ url_for('static', filename=purchase.product.preview_images[0]) }}" 
+                         alt="{{ purchase.product.title }}" class="w-full h-full object-cover">
+                {% endif %}
+                <div class="absolute top-3 right-3 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                    Owned
+                </div>
+            </div>
+            
+            <div class="p-5">
+                <span class="text-xs font-medium text-primary-600 bg-primary-50 px-2 py-0.5 rounded-full">
+                    {{ purchase.product.category.name }}
+                </span>
+                
+                <h3 class="font-semibold text-gray-900 mt-2 mb-1">{{ purchase.product.title }}</h3>
+                <p class="text-sm text-gray-500 mb-4">{{ purchase.product.seller.username }}</p>
+                
+                <div class="flex items-center justify-between text-sm text-gray-500 mb-4">
+                    <span>Purchased {{ purchase.created_at.strftime('%b %d, %Y') }}</span>
+                    <span>{{ purchase.download_count }} downloads</span>
+                </div>
+                
+                <a href="{{ url_for('product.download', slug=purchase.product.slug) }}" 
+                   class="block w-full bg-gray-900 text-white text-center py-2.5 rounded-xl font-medium hover:bg-gray-800 transition flex items-center justify-center gap-2">
+                    <i data-lucide="download" class="w-4 h-4"></i>
+                    Download
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-20 bg-white rounded-2xl border border-gray-200">
+        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i data-lucide="shopping-bag" class="w-8 h-8 text-gray-400"></i>
+        </div>
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">No purchases yet</h3>
+        <p class="text-gray-500 mb-6">Start exploring our marketplace</p>
+        <a href="{{ url_for('main.product_list') }}" class="bg-primary-600 text-white px-6 py-2.5 rounded-xl font-medium hover:bg-primary-700 transition">
+            Browse Products
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

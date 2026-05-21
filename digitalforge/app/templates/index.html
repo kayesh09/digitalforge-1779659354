@@ -1,0 +1,1033 @@
+{% extends "base.html" %}
+
+{% block title %}DigitalForge - Premium Digital Marketplace{% endblock %}
+
+{% block extra_head %}
+<style>
+    :root {
+        --bg-primary: #0a0a0f;
+        --bg-secondary: #0f0f1a;
+        --bg-card: rgba(255, 255, 255, 0.03);
+        --border-subtle: rgba(255, 255, 255, 0.06);
+        --border-hover: rgba(139, 92, 246, 0.3);
+        --text-primary: #ffffff;
+        --text-secondary: #9ca3af;
+        --text-muted: #6b7280;
+        --accent-purple: #8b5cf6;
+        --accent-blue: #3b82f6;
+        --accent-cyan: #06b6d4;
+        --accent-pink: #ec4899;
+        --glow-purple: rgba(139, 92, 246, 0.4);
+        --glow-blue: rgba(59, 130, 246, 0.3);
+    }
+
+    .hero-bg {
+        background: 
+            radial-gradient(ellipse 80% 50% at 50% -20%, rgba(139, 92, 246, 0.15), transparent),
+            radial-gradient(ellipse 60% 40% at 50% 120%, rgba(59, 130, 246, 0.1), transparent),
+            linear-gradient(180deg, #0a0a0f 0%, #0f0f1a 50%, #0a0a0f 100%);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .orb-container {
+        position: absolute;
+        top: 45%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 500px;
+        height: 500px;
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    .orb-core {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: radial-gradient(circle, #1a1a2e 0%, #0f0f1a 40%, transparent 70%);
+        box-shadow: 
+            0 0 60px 20px rgba(139, 92, 246, 0.3),
+            0 0 120px 40px rgba(139, 92, 246, 0.15),
+            inset 0 0 40px rgba(139, 92, 246, 0.1);
+        animation: orbPulse 4s ease-in-out infinite;
+    }
+
+    .orb-ring-1 {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 200px;
+        height: 80px;
+        border-radius: 50%;
+        border: 2px solid transparent;
+        border-top: 2px solid rgba(139, 92, 246, 0.6);
+        border-bottom: 2px solid rgba(59, 130, 246, 0.4);
+        animation: orbSpin 8s linear infinite;
+        filter: blur(1px);
+    }
+
+    .orb-ring-2 {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(60deg);
+        width: 280px;
+        height: 100px;
+        border-radius: 50%;
+        border: 1px solid transparent;
+        border-left: 2px solid rgba(236, 72, 153, 0.4);
+        border-right: 2px solid rgba(6, 182, 212, 0.3);
+        animation: orbSpinReverse 12s linear infinite;
+        filter: blur(2px);
+    }
+
+    .orb-ring-3 {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(-30deg);
+        width: 350px;
+        height: 120px;
+        border-radius: 50%;
+        border: 1px solid rgba(139, 92, 246, 0.15);
+        animation: orbSpin 15s linear infinite;
+    }
+
+    .orb-glow {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 400px;
+        height: 200px;
+        background: radial-gradient(ellipse, rgba(139, 92, 246, 0.2) 0%, transparent 70%);
+        filter: blur(40px);
+        animation: orbGlowPulse 3s ease-in-out infinite;
+    }
+
+    .orb-particles {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 400px;
+        height: 400px;
+    }
+
+    .orb-particle {
+        position: absolute;
+        width: 3px;
+        height: 3px;
+        background: rgba(139, 92, 246, 0.8);
+        border-radius: 50%;
+        box-shadow: 0 0 6px 2px rgba(139, 92, 246, 0.4);
+    }
+
+    @keyframes orbPulse {
+        0%, 100% { 
+            transform: translate(-50%, -50%) scale(1);
+            box-shadow: 
+                0 0 60px 20px rgba(139, 92, 246, 0.3),
+                0 0 120px 40px rgba(139, 92, 246, 0.15);
+        }
+        50% { 
+            transform: translate(-50%, -50%) scale(1.05);
+            box-shadow: 
+                0 0 80px 30px rgba(139, 92, 246, 0.4),
+                0 0 150px 50px rgba(139, 92, 246, 0.2);
+        }
+    }
+
+    @keyframes orbSpin {
+        0% { transform: translate(-50%, -50%) rotate(0deg); }
+        100% { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    @keyframes orbSpinReverse {
+        0% { transform: translate(-50%, -50%) rotate(60deg); }
+        100% { transform: translate(-50%, -50%) rotate(-300deg); }
+    }
+
+    @keyframes orbGlowPulse {
+        0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
+        50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+    }
+
+    @keyframes particleOrbit {
+        0% { transform: rotate(0deg) translateX(var(--orbit-radius)) rotate(0deg); opacity: 0; }
+        10% { opacity: 1; }
+        90% { opacity: 1; }
+        100% { transform: rotate(360deg) translateX(var(--orbit-radius)) rotate(-360deg); opacity: 0; }
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0px) rotate(0deg); }
+        50% { transform: translateY(-20px) rotate(2deg); }
+    }
+
+    @keyframes floatReverse {
+        0%, 100% { transform: translateY(0px) rotate(0deg); }
+        50% { transform: translateY(20px) rotate(-2deg); }
+    }
+
+    @keyframes floatSlow {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+    }
+
+    .float-card {
+        animation: float 6s ease-in-out infinite;
+    }
+
+    .float-card-reverse {
+        animation: floatReverse 7s ease-in-out infinite;
+    }
+
+    .float-slow {
+        animation: floatSlow 8s ease-in-out infinite;
+    }
+
+    .glass {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .glass-card {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .glass-card:hover {
+        background: rgba(255, 255, 255, 0.06);
+        border-color: rgba(139, 92, 246, 0.3);
+        transform: translateY(-8px);
+        box-shadow: 
+            0 20px 40px rgba(0, 0, 0, 0.4),
+            0 0 30px rgba(139, 92, 246, 0.1);
+    }
+
+    .glow-text {
+        text-shadow: 
+            0 0 20px rgba(139, 92, 246, 0.5),
+            0 0 40px rgba(139, 92, 246, 0.3),
+            0 0 60px rgba(59, 130, 246, 0.2);
+    }
+
+    .glow-purple {
+        box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+    }
+
+    .btn-primary {
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: left 0.5s ease;
+    }
+
+    .btn-primary:hover::before {
+        left: 100%;
+    }
+
+    .btn-primary:hover {
+        box-shadow: 0 0 30px rgba(139, 92, 246, 0.4);
+        transform: translateY(-2px);
+    }
+
+    .btn-glass {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .btn-glass:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(139, 92, 246, 0.4);
+        box-shadow: 0 0 20px rgba(139, 92, 246, 0.15);
+    }
+
+    @keyframes marquee {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-50%); }
+    }
+
+    .marquee-track {
+        animation: marquee 40s linear infinite;
+    }
+
+    .marquee-track:hover {
+        animation-play-state: paused;
+    }
+
+    .reveal {
+        opacity: 0;
+        transform: translateY(40px);
+        transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .reveal.active {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .reveal-left {
+        opacity: 0;
+        transform: translateX(-60px);
+        transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .reveal-left.active {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    .reveal-right {
+        opacity: 0;
+        transform: translateX(60px);
+        transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .reveal-right.active {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    .reveal-scale {
+        opacity: 0;
+        transform: scale(0.9);
+        transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .reveal-scale.active {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    @keyframes countUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes shimmer {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
+    }
+
+    .shimmer {
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.03), transparent);
+        background-size: 200% 100%;
+        animation: shimmer 3s infinite;
+    }
+
+    @keyframes pulseRing {
+        0% { transform: scale(0.8); opacity: 0.8; }
+        100% { transform: scale(2); opacity: 0; }
+    }
+
+    .pulse-ring::after {
+        content: '';
+        position: absolute;
+        inset: -4px;
+        border-radius: inherit;
+        border: 2px solid rgba(139, 92, 246, 0.5);
+        animation: pulseRing 2s ease-out infinite;
+    }
+
+    .gradient-text {
+        background: linear-gradient(135deg, #c084fc, #818cf8, #60a5fa);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .product-card {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .product-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.05), transparent);
+        transition: left 0.6s ease;
+        z-index: 1;
+        pointer-events: none;
+    }
+
+    .product-card:hover::before {
+        left: 100%;
+    }
+
+    @keyframes badgePulse {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.4); }
+        50% { box-shadow: 0 0 0 8px rgba(139, 92, 246, 0); }
+    }
+
+    .badge-pulse {
+        animation: badgePulse 2s ease-in-out infinite;
+    }
+
+    .stagger-children > * {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    .stagger-children.active > *:nth-child(1) { animation: staggerIn 0.6s 0.1s forwards; }
+    .stagger-children.active > *:nth-child(2) { animation: staggerIn 0.6s 0.2s forwards; }
+    .stagger-children.active > *:nth-child(3) { animation: staggerIn 0.6s 0.3s forwards; }
+    .stagger-children.active > *:nth-child(4) { animation: staggerIn 0.6s 0.4s forwards; }
+    .stagger-children.active > *:nth-child(5) { animation: staggerIn 0.6s 0.5s forwards; }
+    .stagger-children.active > *:nth-child(6) { animation: staggerIn 0.6s 0.6s forwards; }
+    .stagger-children.active > *:nth-child(7) { animation: staggerIn 0.6s 0.7s forwards; }
+    .stagger-children.active > *:nth-child(8) { animation: staggerIn 0.6s 0.8s forwards; }
+
+    @keyframes staggerIn {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .tilt-card {
+        transform-style: preserve-3d;
+        transition: transform 0.3s ease;
+    }
+
+    .noise-overlay {
+        position: absolute;
+        inset: 0;
+        opacity: 0.03;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        pointer-events: none;
+        z-index: 2;
+    }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #0a0a0f; }
+    ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #6b7280; }
+
+    @media (max-width: 768px) {
+        .orb-container { display: none; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="hero-bg relative min-h-screen flex items-center">
+    <div class="noise-overlay"></div>
+    
+    <div class="orb-container">
+        <div class="orb-glow"></div>
+        <div class="orb-ring-3"></div>
+        <div class="orb-ring-2"></div>
+        <div class="orb-ring-1"></div>
+        <div class="orb-core"></div>
+        <div class="orb-particles" id="orbParticles"></div>
+    </div>
+    
+    <div class="absolute top-20 left-10 w-96 h-96 bg-purple-600/10 rounded-full blur-[100px] float-card"></div>
+    <div class="absolute bottom-20 right-10 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[120px] float-card-reverse"></div>
+    <div class="absolute top-1/3 right-1/4 w-64 h-64 bg-cyan-600/5 rounded-full blur-[80px] float-slow"></div>
+    
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 py-32">
+        <div class="text-center max-w-4xl mx-auto">
+            <div class="inline-flex items-center gap-2 glass rounded-full px-4 py-2 mb-8 reveal-scale">
+                <i data-lucide="sparkles" class="w-4 h-4 text-purple-400"></i>
+                <span class="text-sm text-gray-300">New: AI-powered search just landed</span>
+            </div>
+            
+            <h1 class="text-5xl md:text-7xl lg:text-8xl font-bold text-white leading-[1.1] mb-6 reveal">
+                Buy & Sell <br>
+                <span class="gradient-text glow-text">Digital Assets</span>
+            </h1>
+            
+            <p class="text-lg md:text-xl text-gray-400 mb-10 max-w-2xl mx-auto leading-relaxed reveal" style="transition-delay: 0.2s;">
+                The future of digital commerce is here. Templates, AI tools, scripts, and full applications — all with instant crypto payments.
+            </p>
+            
+            <div class="flex flex-col sm:flex-row gap-4 justify-center mb-16 reveal" style="transition-delay: 0.4s;">
+                <a href="{{ url_for('main.product_list') }}" 
+                   class="btn-primary text-white px-8 py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-2">
+                    Explore Products
+                    <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                </a>
+                <a href="{{ url_for('auth.register') }}" 
+                   class="btn-glass text-white px-8 py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-2">
+                    <i data-lucide="zap" class="w-5 h-5 text-purple-400"></i>
+                    Start Selling
+                </a>
+            </div>
+            
+            <div class="flex items-center gap-8 justify-center text-sm text-gray-500 reveal" style="transition-delay: 0.6s;">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-full bg-green-500/10 flex items-center justify-center">
+                        <i data-lucide="shield-check" class="w-4 h-4 text-green-400"></i>
+                    </div>
+                    <span>Secure</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-full bg-yellow-500/10 flex items-center justify-center">
+                        <i data-lucide="bolt" class="w-4 h-4 text-yellow-400"></i>
+                    </div>
+                    <span>Instant</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center">
+                        <i data-lucide="lock" class="w-4 h-4 text-blue-400"></i>
+                    </div>
+                    <span>Encrypted</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-gray-900 to-transparent z-10"></div>
+</section>
+
+<section class="bg-gray-900 py-20 relative overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid lg:grid-cols-2 gap-16 items-center">
+            <div class="reveal-left">
+                <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">
+                    Discover <span class="gradient-text">Premium</span><br>Digital Products
+                </h2>
+                <p class="text-gray-400 text-lg mb-8 leading-relaxed">
+                    From website templates to AI tools, find exactly what you need to build faster and smarter. Every product is verified and encrypted.
+                </p>
+                
+                <div class="space-y-4 mb-8">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center flex-shrink-0">
+                            <i data-lucide="search" class="w-6 h-6 text-purple-400"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-white font-semibold">Smart Search</h4>
+                            <p class="text-sm text-gray-500">Find products with AI-powered recommendations</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center flex-shrink-0">
+                            <i data-lucide="download" class="w-6 h-6 text-blue-400"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-white font-semibold">Instant Delivery</h4>
+                            <p class="text-sm text-gray-500">Download immediately after purchase</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center flex-shrink-0">
+                            <i data-lucide="refresh-cw" class="w-6 h-6 text-green-400"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-white font-semibold">Lifetime Updates</h4>
+                            <p class="text-sm text-gray-500">Free updates for all purchased products</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <a href="{{ url_for('main.product_list') }}" class="inline-flex items-center gap-2 text-purple-400 hover:text-purple-300 font-semibold transition">
+                    Browse All Products <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </a>
+            </div>
+            
+            <div class="relative h-[500px] hidden lg:block reveal-right">
+                <div class="absolute top-0 right-10 w-72 glass-card rounded-2xl p-5 float-card z-20 tilt-card" data-tilt>
+                    <div class="aspect-video bg-gradient-to-br from-purple-600/20 to-blue-600/20 rounded-xl mb-4 flex items-center justify-center border border-purple-500/20">
+                        <i data-lucide="layout" class="w-14 h-14 text-purple-400"></i>
+                    </div>
+                    <h3 class="text-white font-bold text-lg mb-1">SaaS Dashboard</h3>
+                    <p class="text-gray-500 text-sm mb-3">React + Tailwind Template</p>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <div class="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-purple-500"></div>
+                            <span class="text-sm text-gray-400">@alexdev</span>
+                        </div>
+                        <span class="text-purple-400 font-bold">$49</span>
+                    </div>
+                </div>
+                
+                <div class="absolute top-32 left-0 w-64 glass-card rounded-2xl p-5 float-card-reverse z-10 tilt-card" data-tilt>
+                    <div class="aspect-video bg-gradient-to-br from-pink-600/20 to-orange-600/20 rounded-xl mb-4 flex items-center justify-center border border-pink-500/20">
+                        <i data-lucide="brain" class="w-14 h-14 text-pink-400"></i>
+                    </div>
+                    <h3 class="text-white font-bold text-lg mb-1">AI Prompt Pack</h3>
+                    <p class="text-gray-500 text-sm mb-3">500+ Curated Prompts</p>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <div class="w-6 h-6 rounded-full bg-gradient-to-br from-pink-500 to-orange-500"></div>
+                            <span class="text-sm text-gray-400">@aiguru</span>
+                        </div>
+                        <span class="text-pink-400 font-bold">$29</span>
+                    </div>
+                </div>
+                
+                <div class="absolute bottom-10 right-0 w-60 glass-card rounded-2xl p-5 float-card z-30 tilt-card" data-tilt style="animation-delay: -2s;">
+                    <div class="aspect-video bg-gradient-to-br from-cyan-600/20 to-teal-600/20 rounded-xl mb-4 flex items-center justify-center border border-cyan-500/20">
+                        <i data-lucide="code" class="w-14 h-14 text-cyan-400"></i>
+                    </div>
+                    <h3 class="text-white font-bold text-lg mb-1">API Boilerplate</h3>
+                    <p class="text-gray-500 text-sm mb-3">Flask + PostgreSQL</p>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <div class="w-6 h-6 rounded-full bg-gradient-to-br from-cyan-500 to-teal-500"></div>
+                            <span class="text-sm text-gray-400">@backendpro</span>
+                        </div>
+                        <span class="text-cyan-400 font-bold">$99</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="bg-gray-900 py-16 border-y border-white/5">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 stagger-children" id="statsSection">
+            <div class="text-center">
+                <div class="text-4xl md:text-5xl font-bold text-white mb-1 counter" data-target="{{ stats.total_products }}">0</div>
+                <div class="text-sm text-gray-500 uppercase tracking-widest">Products</div>
+            </div>
+            <div class="text-center">
+                <div class="text-4xl md:text-5xl font-bold text-white mb-1 counter" data-target="{{ stats.total_creators }}">0</div>
+                <div class="text-sm text-gray-500 uppercase tracking-widest">Creators</div>
+            </div>
+            <div class="text-center">
+                <div class="text-4xl md:text-5xl font-bold text-white mb-1 counter" data-target="{{ stats.total_sales }}">0</div>
+                <div class="text-sm text-gray-500 uppercase tracking-widest">Sales</div>
+            </div>
+            <div class="text-center">
+                <div class="text-4xl md:text-5xl font-bold text-white mb-1">$0</div>
+                <div class="text-sm text-gray-500 uppercase tracking-widest">Gas Fees</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="bg-gray-900 py-24 relative">
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-purple-600/5 rounded-full blur-[120px]"></div>
+    
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="text-center mb-16 reveal">
+            <h2 class="text-4xl md:text-5xl font-bold text-white mb-4">Browse by <span class="gradient-text">Category</span></h2>
+            <p class="text-gray-400 max-w-2xl mx-auto text-lg">Discover assets across every digital discipline</p>
+        </div>
+        
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 stagger-children" id="categoriesGrid">
+            {% for category in categories %}
+            <a href="{{ url_for('main.product_list', category=category.slug) }}" 
+               class="group glass-card rounded-2xl p-6 text-center hover:border-purple-500/40 transition-all duration-500">
+                <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-gray-800 to-gray-700 flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 relative overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-br from-purple-600/0 to-blue-600/0 group-hover:from-purple-600/20 group-hover:to-blue-600/20 transition-all duration-500"></div>
+                    <i data-lucide="{{ category.icon or 'box' }}" class="w-8 h-8 text-gray-400 group-hover:text-purple-400 transition-colors duration-300 relative z-10"></i>
+                </div>
+                <h3 class="text-white font-semibold mb-1 group-hover:text-purple-400 transition-colors">{{ category.name }}</h3>
+                <p class="text-sm text-gray-500">{{ category.product_count }} products</p>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+{% if featured %}
+<section class="bg-gray-900 py-24 relative overflow-hidden">
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[600px] bg-blue-600/5 rounded-full blur-[150px]"></div>
+    
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="flex items-center justify-between mb-12 reveal">
+            <div>
+                <h2 class="text-4xl md:text-5xl font-bold text-white mb-2">Featured <span class="gradient-text">Products</span></h2>
+                <p class="text-gray-400 text-lg">Hand-picked by our team</p>
+            </div>
+            <a href="{{ url_for('main.product_list') }}" 
+               class="hidden md:flex items-center gap-2 text-purple-400 hover:text-purple-300 font-medium transition group">
+                View All 
+                <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition"></i>
+            </a>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 stagger-children" id="featuredGrid">
+            {% for product in featured %}
+            <div class="glass-card rounded-2xl overflow-hidden group product-card reveal-scale">
+                <div class="relative aspect-[16/10] overflow-hidden bg-gray-800">
+                    {% if product.preview_images %}
+                        <img src="{{ url_for('static', filename=product.preview_images[0]) }}" 
+                             alt="{{ product.title }}" 
+                             class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                    {% else %}
+                        <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-800 to-gray-700">
+                            <i data-lucide="image" class="w-12 h-12 text-gray-600"></i>
+                        </div>
+                    {% endif %}
+                    
+                    <div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent opacity-70"></div>
+                    
+                    {% if product.is_free %}
+                        <span class="absolute top-4 left-4 bg-green-500/90 backdrop-blur-sm text-white text-xs font-bold px-3 py-1.5 rounded-full">FREE</span>
+                    {% endif %}
+                    
+                    <div class="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+                        <a href="{{ url_for('product.detail', slug=product.slug) }}" 
+                           class="bg-white text-gray-900 px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-gray-100 transition shadow-lg">
+                            View Details
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="p-6 relative z-10">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="text-xs font-medium text-purple-400 bg-purple-400/10 px-2.5 py-1 rounded-lg">
+                            {{ product.category.name }}
+                        </span>
+                        <span class="text-xs text-gray-500 flex items-center gap-1">
+                            <i data-lucide="download" class="w-3 h-3"></i> {{ product.download_count }}
+                        </span>
+                    </div>
+                    
+                    <h3 class="text-lg font-bold text-white mb-2 group-hover:text-purple-400 transition-colors">{{ product.title }}</h3>
+                    <p class="text-sm text-gray-400 mb-4 line-clamp-2">{{ product.short_description }}</p>
+                    
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white text-xs font-bold">
+                                {{ product.seller.username[0].upper() }}
+                            </div>
+                            <span class="text-sm text-gray-400">{{ product.seller.username }}</span>
+                        </div>
+                        <span class="text-xl font-bold {% if product.is_free %}text-green-400{% else %}text-white{% endif %}">
+                            {% if product.is_free %}Free{% else %}${{ product.price }}{% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<section class="bg-gray-900 py-16 border-y border-white/5 overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+        <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+            <span class="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></span>
+            New Arrivals
+        </h2>
+    </div>
+    
+    <div class="relative">
+        <div class="flex gap-6 marquee-track" style="width: max-content;">
+            {% for product in new_arrivals %}
+            <div class="w-80 glass-card rounded-2xl overflow-hidden flex-shrink-0 hover:border-purple-500/30 transition-all duration-300 group cursor-pointer">
+                <div class="aspect-[4/3] bg-gray-800 relative overflow-hidden">
+                    {% if product.preview_images %}
+                        <img src="{{ url_for('static', filename=product.preview_images[0]) }}" 
+                             alt="{{ product.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    {% endif %}
+                    <div class="absolute inset-0 bg-gradient-to-t from-gray-900/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
+                <div class="p-4">
+                    <h4 class="text-white font-medium mb-1 group-hover:text-purple-400 transition">{{ product.title }}</h4>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-500">{{ product.category.name }}</span>
+                        <span class="text-purple-400 font-bold">${{ product.price }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            {% for product in new_arrivals %}
+            <div class="w-80 glass-card rounded-2xl overflow-hidden flex-shrink-0 hover:border-purple-500/30 transition-all duration-300 group cursor-pointer">
+                <div class="aspect-[4/3] bg-gray-800 relative overflow-hidden">
+                    {% if product.preview_images %}
+                        <img src="{{ url_for('static', filename=product.preview_images[0]) }}" 
+                             alt="{{ product.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    {% endif %}
+                    <div class="absolute inset-0 bg-gradient-to-t from-gray-900/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
+                <div class="p-4">
+                    <h4 class="text-white font-medium mb-1 group-hover:text-purple-400 transition">{{ product.title }}</h4>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-500">{{ product.category.name }}</span>
+                        <span class="text-purple-400 font-bold">${{ product.price }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="bg-gray-900 py-24 relative">
+    <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-purple-600/5 rounded-full blur-[150px]"></div>
+    <div class="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-600/5 rounded-full blur-[120px]"></div>
+    
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="text-center mb-16 reveal">
+            <h2 class="text-4xl md:text-5xl font-bold text-white mb-4">Why <span class="gradient-text">DigitalForge?</span></h2>
+            <p class="text-gray-400 max-w-2xl mx-auto text-lg">Built for creators, by creators</p>
+        </div>
+        
+        <div class="grid md:grid-cols-3 gap-8 stagger-children" id="featuresGrid">
+            <div class="glass-card rounded-2xl p-8 relative overflow-hidden group reveal">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl group-hover:bg-blue-500/20 transition-all duration-500"></div>
+                <div class="w-14 h-14 rounded-2xl bg-blue-500/10 flex items-center justify-center mb-6 relative z-10 group-hover:scale-110 transition-transform">
+                    <i data-lucide="shield" class="w-7 h-7 text-blue-400"></i>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-3 relative z-10">Client-Side Encryption</h3>
+                <p class="text-gray-400 leading-relaxed relative z-10">Your files are encrypted with AES-256-GCM before they ever leave your browser. Only verified buyers can decrypt them.</p>
+            </div>
+            
+            <div class="glass-card rounded-2xl p-8 relative overflow-hidden group reveal">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl group-hover:bg-purple-500/20 transition-all duration-500"></div>
+                <div class="w-14 h-14 rounded-2xl bg-purple-500/10 flex items-center justify-center mb-6 relative z-10 group-hover:scale-110 transition-transform">
+                    <i data-lucide="zap" class="w-7 h-7 text-purple-400"></i>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-3 relative z-10">Instant Crypto Payments</h3>
+                <p class="text-gray-400 leading-relaxed relative z-10">Connect your wallet and pay in seconds. No waiting, no chargebacks. Powered by Base and Polygon networks.</p>
+            </div>
+            
+            <div class="glass-card rounded-2xl p-8 relative overflow-hidden group reveal">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-green-500/10 rounded-full blur-2xl group-hover:bg-green-500/20 transition-all duration-500"></div>
+                <div class="w-14 h-14 rounded-2xl bg-green-500/10 flex items-center justify-center mb-6 relative z-10 group-hover:scale-110 transition-transform">
+                    <i data-lucide="percent" class="w-7 h-7 text-green-400"></i>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-3 relative z-10">85% Creator Cut</h3>
+                <p class="text-gray-400 leading-relaxed relative z-10">We only take 15%. The rest goes straight to creators. No hidden fees, no monthly subscriptions, ever.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="bg-gray-900 py-24 border-y border-white/5">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16 reveal">
+            <h2 class="text-4xl md:text-5xl font-bold text-white mb-4">How It <span class="gradient-text">Works</span></h2>
+            <p class="text-gray-400 max-w-2xl mx-auto text-lg">Three simple steps to start selling</p>
+        </div>
+        
+        <div class="grid md:grid-cols-3 gap-8 relative">
+            <div class="hidden md:block absolute top-1/2 left-1/3 right-1/3 h-px bg-gradient-to-r from-purple-500/0 via-purple-500/30 to-purple-500/0"></div>
+            
+            <div class="text-center reveal" style="transition-delay: 0.1s;">
+                <div class="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-purple-600/20 to-blue-600/20 border border-purple-500/20 flex items-center justify-center relative">
+                    <span class="text-3xl font-bold text-purple-400">1</span>
+                    <div class="absolute -top-1 -right-1 w-4 h-4 bg-purple-500 rounded-full badge-pulse"></div>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-3">Upload Your Product</h3>
+                <p class="text-gray-400">Drag and drop your files. We encrypt everything client-side before upload.</p>
+            </div>
+            
+            <div class="text-center reveal" style="transition-delay: 0.3s;">
+                <div class="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-blue-600/20 to-cyan-600/20 border border-blue-500/20 flex items-center justify-center relative">
+                    <span class="text-3xl font-bold text-blue-400">2</span>
+                    <div class="absolute -top-1 -right-1 w-4 h-4 bg-blue-500 rounded-full badge-pulse" style="animation-delay: 0.5s;"></div>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-3">Set Your Price</h3>
+                <p class="text-gray-400">Choose your price in USD. Buyers pay with ETH, USDC, or DAI.</p>
+            </div>
+            
+            <div class="text-center reveal" style="transition-delay: 0.5s;">
+                <div class="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-cyan-600/20 to-green-600/20 border border-cyan-500/20 flex items-center justify-center relative">
+                    <span class="text-3xl font-bold text-cyan-400">3</span>
+                    <div class="absolute -top-1 -right-1 w-4 h-4 bg-cyan-500 rounded-full badge-pulse" style="animation-delay: 1s;"></div>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-3">Get Paid Instantly</h3>
+                <p class="text-gray-400">85% goes to your wallet immediately. No waiting for payouts.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="bg-gray-900 py-24 relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-r from-purple-600/10 via-blue-600/10 to-cyan-600/10"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-purple-600/10 rounded-full blur-[150px]"></div>
+    
+    <div class="absolute top-20 left-20 w-20 h-20 glass rounded-2xl float-card hidden lg:flex items-center justify-center">
+        <i data-lucide="code" class="w-8 h-8 text-purple-400"></i>
+    </div>
+    <div class="absolute bottom-20 right-20 w-20 h-20 glass rounded-2xl float-card-reverse hidden lg:flex items-center justify-center" style="animation-delay: -3s;">
+        <i data-lucide="palette" class="w-8 h-8 text-blue-400"></i>
+    </div>
+    <div class="absolute top-1/3 right-1/4 w-16 h-16 glass rounded-xl float-slow hidden lg:flex items-center justify-center">
+        <i data-lucide="cpu" class="w-6 h-6 text-cyan-400"></i>
+    </div>
+    
+    <div class="max-w-4xl mx-auto px-4 text-center relative z-10 reveal">
+        <div class="inline-flex items-center gap-2 glass rounded-full px-4 py-2 mb-8">
+            <i data-lucide="rocket" class="w-4 h-4 text-purple-400"></i>
+            <span class="text-sm text-gray-300">Join 10,000+ creators</span>
+        </div>
+        
+        <h2 class="text-5xl md:text-6xl font-bold text-white mb-6">Ready to Start <span class="gradient-text">Selling?</span></h2>
+        <p class="text-lg text-gray-400 mb-10 max-w-2xl mx-auto leading-relaxed">
+            Turn your digital creations into crypto income. Zero setup fees, instant payouts, and a community of buyers waiting for your next product.
+        </p>
+        
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="{{ url_for('auth.register') }}" 
+               class="btn-primary text-white px-10 py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-2">
+                <i data-lucide="user-plus" class="w-5 h-5"></i>
+                Create Free Account
+            </a>
+            <a href="{{ url_for('main.product_list') }}" 
+               class="btn-glass text-white px-10 py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-2">
+                <i data-lucide="compass" class="w-5 h-5 text-purple-400"></i>
+                Explore Products
+            </a>
+        </div>
+    </div>
+</section>
+
+<script>
+const orbParticles = document.getElementById('orbParticles');
+if (orbParticles) {
+    for (let i = 0; i < 30; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'orb-particle';
+        const angle = (i / 30) * Math.PI * 2;
+        const radius = 80 + Math.random() * 100;
+        const duration = 10 + Math.random() * 20;
+        const delay = Math.random() * -20;
+        
+        particle.style.cssText = `
+            left: 50%;
+            top: 50%;
+            --orbit-radius: ${radius}px;
+            animation: particleOrbit ${duration}s linear infinite;
+            animation-delay: ${delay}s;
+            opacity: ${0.3 + Math.random() * 0.7};
+        `;
+        
+        const colors = [
+            'rgba(139, 92, 246, 0.8)',
+            'rgba(59, 130, 246, 0.8)',
+            'rgba(6, 182, 212, 0.8)',
+            'rgba(236, 72, 153, 0.6)'
+        ];
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        particle.style.background = color;
+        particle.style.boxShadow = `0 0 6px 2px ${color.replace('0.8', '0.3')}`;
+        
+        orbParticles.appendChild(particle);
+    }
+}
+
+document.querySelectorAll('[data-tilt]').forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        const rotateX = (y - centerY) / 20;
+        const rotateY = (centerX - x) / 20;
+        
+        card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(10px)`;
+    });
+    
+    card.addEventListener('mouseleave', () => {
+        card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateZ(0)';
+    });
+});
+
+const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('active');
+        }
+    });
+}, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale').forEach(el => {
+    revealObserver.observe(el);
+});
+
+const staggerObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('active');
+        }
+    });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.stagger-children').forEach(el => {
+    staggerObserver.observe(el);
+});
+
+const counterObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            const target = parseInt(entry.target.dataset.target) || 0;
+            const duration = 2000;
+            const startTime = performance.now();
+            
+            const updateCounter = (currentTime) => {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const easeOut = 1 - Math.pow(1 - progress, 3);
+                const current = Math.floor(easeOut * target);
+                
+                entry.target.textContent = current.toLocaleString();
+                
+                if (progress < 1) {
+                    requestAnimationFrame(updateCounter);
+                }
+            };
+            
+            requestAnimationFrame(updateCounter);
+            counterObserver.unobserve(entry.target);
+        }
+    });
+}, { threshold: 0.5 });
+
+document.querySelectorAll('.counter').forEach(c => counterObserver.observe(c));
+
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    });
+});
+
+const heroSection = document.querySelector('.hero-bg');
+if (heroSection) {
+    heroSection.addEventListener('mousemove', (e) => {
+        const rect = heroSection.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+        
+        const orb = document.querySelector('.orb-container');
+        if (orb) {
+            orb.style.transform = `translate(calc(-50% + ${x * 30}px), calc(-50% + ${y * 30}px))`;
+        }
+    });
+}
+</script>
+{% endblock %}
